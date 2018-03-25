@@ -1,3 +1,4 @@
+#!/bin/bash
 echo "--- Hardware ---"
 
 # CPU: Intel xeon 2675
@@ -49,3 +50,12 @@ echo "--- Network ---"
 # <Iface #2  name>:  IP/mask
 # …
 # <Iface #N  name>:  IP/mask
+
+while IFS= read -r line; do
+ 	addr="-"
+    if [ ! -z $(cut -d" " -f3 <<< $line) ]; then
+    	addr=$(cut -d" " -f3-4 <<< $line)
+    fi
+    echo "$(cut -d" " -f1 <<< $line): $addr"
+done < <( ip -br addr show )
+
