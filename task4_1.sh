@@ -24,8 +24,7 @@ mb_sn=$(sudo dmidecode -s "system-serial-number")
 echo "Motherboard: $mb_manuf / $mb_pname / $mb_version / ${mb_sn:-Unknown}"
 
 # System Serial Number: XXXXXX
-sys_serial_num=$(sudo dmidecode -s system-serial-number)
-echo "System Serial Number: $sys_serial_num"
+echo "System Serial Number: ${mb_sn:-Unknown}"
 
 echo "--- System ---"
 # OS Distribution: xxxxx (например Ubuntu 16.04.4 LTS)
