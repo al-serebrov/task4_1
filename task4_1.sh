@@ -1,11 +1,18 @@
 #!/bin/bash
+
+# Redirect stdout ( > ) into a named pipe ( >() ) running "tee"
+exec > >(tee -i task4_1.out)
+
+# Without this, only stdout would be captured
+exec 2>&1
+
 echo "--- Hardware ---"
 
 # CPU: Intel xeon 2675
 cpu=$(grep -i "model name" /proc/cpuinfo | uniq | cut -f3- -d" ")
 echo "CPU: $cpu"
 
-# RAM: xxxx 
+# RAM: xxxx
 ram=$(grep -i "memtotal" /proc/meminfo | uniq | cut -f9- -d" ")
 echo "RAM: $ram"
 
@@ -13,9 +20,8 @@ echo "RAM: $ram"
 mb_manuf=$(sudo dmidecode -s "baseboard-manufacturer")
 mb_pname=$(sudo dmidecode -s "baseboard-product-name")
 mb_version=$(sudo dmidecode -s "baseboard-version")
-mb_sn=$(sudo dmidecode -s "baseboard-serial-number")
-mb_asset_tag=$(sudo dmidecode -s "baseboard-asset-tag")
-echo "Motherboard: $mb_manuf / $mb_pname / $mb_version / $mb_sn / $mb_asset_tag"
+mb_sn=$(sudo dmidecode -s "system-serial-number")
+echo "Motherboard: $mb_manuf / $mb_pname / $mb_version / ${mb_sn:-Unknown}"
 
 # System Serial Number: XXXXXX
 sys_serial_num=$(sudo dmidecode -s system-serial-number)
@@ -30,14 +36,17 @@ echo "OS Distribution: $desrib_descr"
 echo "Kernel version: $(uname -r)"
 
 # Installation date: xxxx
-inst_date=$(ls -alp /etc/ssh/ssh_host_dsa_key.pub | cut -d" " -f6-9)
+inst_date=$(stat -c "%y" /var/log/installer/)
 echo "Installation date: $inst_date"
 
 # Hostname: yyyyy
 echo "Hostname: $(uname -n)"
 
 # Uptime: XX days
-echo "Uptime: $(uptime -p)"
+uptime=$(</proc/uptime)
+uptime=${uptime%%.*}
+days=$(( uptime/60/60/24 ))
+echo "Uptime: $days days"
 
 # Processes running: 56684
 echo "Processes running: $(ps -aux | wc -l)"
