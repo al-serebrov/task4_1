@@ -2,7 +2,10 @@
 DevOps course
 
 This script intended to gather system information, print it to the console and write to the file task4_1.out.
+
 The information gathered is shown in the following way:
+
+```
 --- Hardware ---
 CPU: Intel xeon 2675
 RAM: xxxx 
@@ -21,3 +24,4 @@ User logged in: 665
 <Iface #2  name>:  IP/mask
 …
 <Iface #N  name>:  IP/mask
+```
