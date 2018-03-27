@@ -13,8 +13,8 @@ cpu=$(grep -i "model name" /proc/cpuinfo | uniq | cut -f3- -d" ")
 echo "CPU: $cpu"
 
 # RAM: xxxx
-ram=$(grep -i "memtotal" /proc/meminfo | uniq | cut -f9- -d" ")
-echo "RAM: $ram"
+ram=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+echo "RAM: $ram kB"
 
 # Motherboard: XXX XX / ??? / Unknown
 mb_manuf=$(sudo dmidecode -s "baseboard-manufacturer")
@@ -60,9 +60,9 @@ echo "--- Network ---"
 # <Iface #N  name>:  IP/mask
 
 while IFS= read -r line; do
- 	addr="-"
+  addr="-"
     if [ ! -z $(cut -d" " -f3 <<< $line) ]; then
-    	addr=$(cut -d" " -f3-4 <<< $line)
+      addr=$(cut -d" " -f3-4 <<< $line)
     fi
     echo "$(cut -d" " -f1 <<< $line): $addr"
 done < <( ip -br addr show )
