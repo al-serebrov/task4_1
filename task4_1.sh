@@ -1,7 +1,7 @@
 #!/bin/bash
-
+DIR=$(dirname $0)
 # Redirect stdout ( > ) into a named pipe ( >() ) running "tee"
-exec > >(tee -i task4_1.out)
+exec > >(tee -i "$DIR"/task4_1.out)
 
 # Without this, only stdout would be captured
 exec 2>&1
@@ -14,14 +14,13 @@ echo "CPU: $cpu"
 
 # RAM: xxxx
 ram=$(grep MemTotal /proc/meminfo | awk '{print $2}')
-echo "RAM: $ram kB"
+echo "RAM: $ram KB"
 
 # Motherboard: XXX XX / ??? / Unknown
 mb_manuf=$(sudo dmidecode -s "baseboard-manufacturer")
 mb_pname=$(sudo dmidecode -s "baseboard-product-name")
-mb_version=$(sudo dmidecode -s "baseboard-version")
 mb_sn=$(sudo dmidecode -s "system-serial-number")
-echo "Motherboard: $mb_manuf / $mb_pname / $mb_version / ${mb_sn:-Unknown}"
+echo "Motherboard: ${mb_manuf:-Unknown} / ${mb_pname:-Unknown}"
 
 # System Serial Number: XXXXXX
 echo "System Serial Number: ${mb_sn:-Unknown}"
@@ -35,17 +34,15 @@ echo "OS Distribution: $desrib_descr"
 echo "Kernel version: $(uname -r)"
 
 # Installation date: xxxx
-inst_date=$(stat -c "%y" /var/log/installer/)
+inst_date=$(stat -c "%y" /var/log/installer/ | cut -d" " -f1)
 echo "Installation date: $inst_date"
 
 # Hostname: yyyyy
 echo "Hostname: $(uname -n)"
 
 # Uptime: XX days
-uptime=$(</proc/uptime)
-uptime=${uptime%%.*}
-days=$(( uptime/60/60/24 ))
-echo "Uptime: $days days"
+uptime=$(uptime -p | cut -d" " -f2-)
+echo "Uptime: $uptime"
 
 # Processes running: 56684
 echo "Processes running: $(ps -aux | wc -l)"
@@ -54,10 +51,10 @@ echo "Processes running: $(ps -aux | wc -l)"
 echo "User logged in: $(who | wc -l)"
 
 echo "--- Network ---"
-# <Iface #1 name>:  IP/mask
-# <Iface #2  name>:  IP/mask
+# <Iface #1 name>: IP/mask
+# <Iface #2  name>: IP/mask
 # …
-# <Iface #N  name>:  IP/mask
+# <Iface #N  name>: IP/mask
 
 while IFS= read -r line; do
   addr="-"
@@ -65,5 +62,5 @@ while IFS= read -r line; do
       addr=$(cut -d" " -f3-4 <<< $line)
     fi
     echo "$(cut -d" " -f1 <<< $line): $addr"
-done < <( ip -br addr show )
+done < <( ip -4 -br addr show )
 
