@@ -3,9 +3,6 @@ DIR=$(dirname $0)
 # Redirect stdout ( > ) into a named pipe ( >() ) running "tee"
 exec > >(tee -i "$DIR"/task4_1.out)
 
-# Without this, only stdout would be captured
-exec 2>&1
-
 echo "--- Hardware ---"
 
 # CPU: Intel xeon 2675
